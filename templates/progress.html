@@ -26,6 +26,15 @@
             padding: 1.5rem 0;
             text-align: center;
         }
+        .hero a {
+            text-decoration: none;
+            color: inherit;
+            display: inline-block;
+            transition: opacity 0.2s ease;
+        }
+        .hero a:hover {
+            opacity: 0.8;
+        }
         .hero h1 {
             color: #ffffff;
             font-weight: 600;
@@ -211,8 +220,10 @@
 </head>
 <body>
     <div class="hero">
-        <h1>{{ company_name }}</h1>
-        <p>Internal Video Downloader</p>
+        <a href="{{ url_for('index') }}">
+            <h1>{{ company_name }}</h1>
+            <p>Internal Video Downloader</p>
+        </a>
     </div>
     <div class="container">
         <h1>Processing Your Request</h1>

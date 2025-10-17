@@ -8,6 +8,8 @@
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; 
@@ -25,6 +27,15 @@
             border-bottom: 1px solid #2a2a2a;
             padding: 1.5rem 0;
             text-align: center;
+        }
+        .hero a {
+            text-decoration: none;
+            color: inherit;
+            display: inline-block;
+            transition: opacity 0.2s ease;
+        }
+        .hero a:hover {
+            opacity: 0.8;
         }
         .hero h1 {
             color: #ffffff;
@@ -215,8 +226,10 @@
 </head>
 <body>
     <div class="hero">
-        <h1>{{ company_name }}</h1>
-        <p>Internal Video Downloader</p>
+        <a href="{{ url_for('index') }}">
+            <h1>{{ company_name }}</h1>
+            <p>Internal Video Downloader</p>
+        </a>
     </div>
     <div class="container">
         <h1>Download Ready</h1>

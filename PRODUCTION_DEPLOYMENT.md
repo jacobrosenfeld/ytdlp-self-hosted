@@ -30,7 +30,7 @@ sudo yum groupinstall -y "Development Tools"
 # Install pip
 curl -O https://bootstrap.pypa.io/get-pip.py
 python3.9 get-pip.py --user
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.locapytl/bin:$PATH"
 ```
 
 ### Create Application User

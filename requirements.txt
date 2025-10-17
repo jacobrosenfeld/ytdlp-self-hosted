@@ -1,4 +1,4 @@
 Flask
-Flask-Session==0.8.0
+Flask-Session
 yt-dlp
 python-dotenv==1.0.0

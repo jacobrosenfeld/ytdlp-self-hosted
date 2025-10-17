@@ -27,11 +27,20 @@ def cleanup_cache():
     """Remove cache files older than 3 days."""
     now = time.time()
     max_age = 3 * 24 * 3600  # 3 days in seconds
+    
+    # Clean main cache files
     for filename in os.listdir(CACHE_DIR):
         filepath = os.path.join(CACHE_DIR, filename)
         if os.path.isfile(filepath):
             if now - os.path.getmtime(filepath) > max_age:
                 os.remove(filepath)
+        elif os.path.isdir(filepath) and filename == 'cuts':
+            # Clean cuts cache directories
+            cuts_dir = filepath
+            for cut_dir in os.listdir(cuts_dir):
+                cut_path = os.path.join(cuts_dir, cut_dir)
+                if os.path.isdir(cut_path) and now - os.path.getmtime(cut_path) > max_age:
+                    shutil.rmtree(cut_path)
 
 def download_video_async(download_id, url, timestamps):
     """Background function to download and process video."""
@@ -83,8 +92,26 @@ def download_video_async(download_id, url, timestamps):
                 progress_data[download_id] = 100
                 return
             
-            # For snippets
+            # For snippets - check if already cached
             timestamp_list = [t.strip() for t in timestamps.split(',') if t.strip()]
+            cache_key = f"{video_id}_{'_'.join(timestamp_list)}"
+            cache_dir = os.path.join(CACHE_DIR, 'cuts', cache_key)
+            
+            # Check if cuts are already cached
+            if os.path.exists(cache_dir) and time.time() - os.path.getmtime(cache_dir) < 3 * 24 * 3600:
+                # Copy cached cuts to output directory
+                for filename in os.listdir(cache_dir):
+                    if filename.endswith('.mp4'):
+                        src_path = os.path.join(cache_dir, filename)
+                        dst_path = os.path.join(output_dir, filename)
+                        shutil.copy2(src_path, dst_path)
+                progress_data[download_id] = 100
+                return
+            
+            # Create cache directory for cuts
+            os.makedirs(cache_dir, exist_ok=True)
+            
+            # Process snippets
             snippets = []
             total_snippets = len(timestamp_list)
             
@@ -92,7 +119,11 @@ def download_video_async(download_id, url, timestamps):
                 start, end = ts.split('-') if '-' in ts else (ts, None)
                 snippet_name = f"{title}_{current_time}_{start.replace(':', '')}-{'end' if end is None else end.replace(':', '')}.mp4"
                 snippet_path = os.path.join(output_dir, snippet_name)
+                cache_snippet_path = os.path.join(cache_dir, snippet_name)
+                
+                # Cut video and save to both output and cache
                 cut_video(full_mp4, snippet_path, start.strip(), end.strip() if end else None)
+                shutil.copy2(snippet_path, cache_snippet_path)
                 snippets.append(snippet_path)
                 
                 # Update progress for cutting

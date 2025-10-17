@@ -312,6 +312,7 @@ def result(download_id):
 
 def get_template_vars():
     return {
+        'company_name': os.getenv('COMPANY_NAME', 'Your Company Name'),
         'company_short_name': os.getenv('COMPANY_SHORT_NAME', 'YourCompany'),
         'support_email': os.getenv('SUPPORT_EMAIL', 'support@yourcompany.com'),
         'location': os.getenv('LOCATION', 'Teaneck, NJ'),

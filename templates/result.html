@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ company_short_name }} Video Downloader - Download Ready</title>
+    <title>{{ company_name }} Video Downloader - Download Ready</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -67,78 +67,6 @@
             color: #e5e5e5;
             margin-bottom: 1rem;
             font-size: 1rem;
-            font-weight: 600;
-        }
-        .hero {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 2.5rem 0;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-        .hero h1 {
-            color: white;
-            font-weight: 800;
-            font-size: 2.5rem;
-            margin-bottom: 0.75rem;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #ffffff 0%, #a8c0ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.1rem;
-            font-weight: 400;
-            letter-spacing: 0.02em;
-        }
-        .container { 
-            max-width: 720px; 
-            margin: 4rem auto; 
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(40px) saturate(180%);
-            border-radius: 24px; 
-            padding: 3.5rem; 
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-                        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            flex: 1;
-            position: relative;
-            text-align: center;
-            z-index: 1;
-        }
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 0px;
-            background: linear-gradient(90deg, #48d1cc, #8a2be2, #48d1cc);
-            border-radius: 24px 24px 0 0;
-        }
-        h1 { 
-            color: white; 
-            margin-bottom: 30px; 
-            font-weight: 700;
-            font-size: 1.8rem;
-        }
-        .file-info {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .file-info h3 {
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
             font-weight: 600;
         }
         .download-list {
@@ -283,36 +211,11 @@
         }
     </style>
 </head>
-        footer a:hover { 
-            color: #764ba2;
-        }
-        .footer-content {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .footer-content p {
-            margin: 5px 0;
-        }
-        .contact-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-        .contact-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
     </style>
 </head>
 <body>
     <div class="hero">
-        <h1>{{ company_short_name }}</h1>
+        <h1>{{ company_name }}</h1>
         <p>Internal Video Downloader</p>
     </div>
     <div class="container">
@@ -349,7 +252,7 @@
     <footer>
         <div class="footer-content">
             <p>Made with ❤️ in {{ location }}</p>
-            <p>© {{ current_year }} {{ company_short_name }}. All rights reserved.</p>
+            <p>© {{ current_year }} {{ company_name }}. All rights reserved.</p>
             <p><a href="mailto:{{ support_email }}" class="contact-btn">Contact Support</a></p>
         </div>
     </footer>

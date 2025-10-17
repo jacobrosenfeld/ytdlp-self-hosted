@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ company_short_name }} Video Downloader - Past Jobs</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>{{ company_name }} Video Downloader - Past Jobs</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,58 +11,46 @@
             padding: 0;
         }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            color: #333;
-            overflow-x: hidden;
+            color: #e5e5e5;
+            font-size: 0.875rem;
         }
         .hero {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 1.5rem 0;
+            background: #252525;
+            border-bottom: 1px solid #3a3a3a;
+            padding: 2rem 0;
             text-align: center;
         }
         .hero h1 {
-            color: white;
-            font-weight: 700;
-            font-size: 2rem;
+            color: #e5e5e5;
+            font-weight: 600;
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.02em;
         }
         .hero p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            font-weight: 300;
+            color: #999;
+            font-size: 0.875rem;
+            font-weight: 400;
         }
         .container {
             max-width: 800px;
-            margin: 4rem auto;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 3rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 2rem auto;
+            background: #252525;
+            border-radius: 6px;
+            padding: 2rem;
+            border: 1px solid #3a3a3a;
             flex: 1;
         }
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 20px 20px 0 0;
-        }
         h1 {
-            color: #34495e;
-            margin-bottom: 30px;
+            color: #e5e5e5;
+            margin-bottom: 1.5rem;
             font-weight: 600;
+            font-size: 1.25rem;
             text-align: center;
         }
         .jobs-list {
@@ -71,23 +58,23 @@
             padding: 0;
         }
         .job-item {
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: #2a2a2a;
+            border-radius: 6px;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid #3a3a3a;
         }
         .job-title {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: #e5e5e5;
             margin-bottom: 0.5rem;
         }
         .job-details {
-            color: #7f8c8d;
-            font-size: 0.9rem;
+            color: #999;
+            font-size: 0.813rem;
             margin-bottom: 1rem;
+            line-height: 1.5;
         }
         .job-meta {
             display: flex;
@@ -97,8 +84,8 @@
             gap: 1rem;
         }
         .job-stats {
-            font-size: 0.9rem;
-            color: #34495e;
+            font-size: 0.813rem;
+            color: #999;
         }
         .job-actions {
             display: flex;
@@ -106,87 +93,84 @@
         }
         .btn {
             padding: 0.5rem 1rem;
-            border-radius: 8px;
+            border-radius: 6px;
             text-decoration: none;
             font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
+            font-size: 0.813rem;
+            transition: all 0.2s ease;
             display: inline-block;
             text-align: center;
+            border: none;
+            cursor: pointer;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            background: #0a84ff;
+            color: #ffffff;
         }
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            background: #0077ed;
         }
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.8);
-            color: #667eea;
-            border: 2px solid #667eea;
+            background: #3a3a3a;
+            color: #e5e5e5;
+            border: 1px solid #4a4a4a;
         }
         .btn-secondary:hover {
-            background: #667eea;
-            color: white;
+            background: #4a4a4a;
         }
         .no-jobs {
             text-align: center;
-            color: #7f8c8d;
-            font-style: italic;
+            color: #666;
             padding: 2rem;
         }
         .info-note {
-            background: rgba(52, 152, 219, 0.1);
-            border-left: 4px solid #3498db;
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
-            color: #2c3e50;
+            background: rgba(10, 132, 255, 0.1);
+            border-left: 3px solid #0a84ff;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #e5e5e5;
         }
         .info-note p {
             margin: 0;
-            font-size: 0.95rem;
+            font-size: 0.875rem;
             line-height: 1.5;
         }
         .back-link {
-            margin-top: 40px;
+            margin-top: 2rem;
             text-align: center;
         }
         .back-link a {
-            color: #667eea;
+            color: #0a84ff;
             text-decoration: none;
             font-weight: 500;
-            font-size: 1rem;
-            padding: 0.75rem 1.5rem;
-            border: 2px solid #667eea;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            padding: 0.625rem 1.25rem;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: inline-block;
         }
         .back-link a:hover {
-            background: #667eea;
-            color: white;
+            background: #2a2a2a;
         }
         footer {
             text-align: center;
             padding: 2rem;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
+            background: #252525;
+            color: #999;
+            font-size: 0.813rem;
             margin-top: auto;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid #3a3a3a;
         }
         footer a {
-            color: #667eea;
+            color: #0a84ff;
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: color 0.2s ease;
         }
         footer a:hover {
-            color: #764ba2;
+            color: #0077ed;
         }
         .footer-content {
             max-width: 600px;
@@ -196,19 +180,18 @@
             margin: 5px 0;
         }
         .contact-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: #3a3a3a;
+            color: #e5e5e5;
+            border: 1px solid #4a4a4a;
             padding: 0.5rem 1rem;
-            border-radius: 8px;
+            border-radius: 6px;
             text-decoration: none;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             display: inline-block;
         }
         .contact-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: #4a4a4a;
         }
         @media (max-width: 600px) {
             .container {
@@ -230,7 +213,7 @@
 </head>
 <body>
     <div class="hero">
-        <h1>{{ company_short_name }}</h1>
+        <h1>{{ company_name }}</h1>
         <p>Internal Video Downloader</p>
     </div>
     <div class="container">
@@ -275,7 +258,7 @@
     <footer>
         <div class="footer-content">
             <p>Made with ❤️ in {{ location }}</p>
-            <p>© {{ current_year }} {{ company_short_name }}. All rights reserved.</p>
+            <p>© {{ current_year }} {{ company_name }}. All rights reserved.</p>
             <p><a href="mailto:{{ support_email }}" class="contact-btn">Contact Support</a></p>
         </div>
     </footer>

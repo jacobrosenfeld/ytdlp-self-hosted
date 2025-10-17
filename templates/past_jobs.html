@@ -11,46 +11,47 @@
             padding: 0;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
             background: #1a1a1a;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             color: #e5e5e5;
-            font-size: 0.875rem;
+            overflow-x: hidden;
         }
         .hero {
-            background: #252525;
-            border-bottom: 1px solid #3a3a3a;
-            padding: 2rem 0;
+            background: #0a0a0a;
+            border-bottom: 1px solid #2a2a2a;
+            padding: 1.5rem 0;
             text-align: center;
         }
         .hero h1 {
-            color: #e5e5e5;
+            color: #ffffff;
             font-weight: 600;
             font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             letter-spacing: -0.02em;
         }
         .hero p {
-            color: #999;
+            color: #8a8a8a;
             font-size: 0.875rem;
             font-weight: 400;
         }
         .container {
-            max-width: 800px;
-            margin: 2rem auto;
+            max-width: 640px;
+            margin: 3rem auto;
             background: #252525;
-            border-radius: 6px;
-            padding: 2rem;
-            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 2.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
             flex: 1;
         }
         h1 {
-            color: #e5e5e5;
+            color: #ffffff;
             margin-bottom: 1.5rem;
             font-weight: 600;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             text-align: center;
         }
         .jobs-list {
@@ -58,20 +59,20 @@
             padding: 0;
         }
         .job-item {
-            background: #2a2a2a;
+            background: #1e1e1e;
             border-radius: 6px;
             padding: 1.25rem;
             margin-bottom: 0.75rem;
             border: 1px solid #3a3a3a;
         }
         .job-title {
-            font-size: 1rem;
+            font-size: 0.938rem;
             font-weight: 600;
-            color: #e5e5e5;
+            color: #ffffff;
             margin-bottom: 0.5rem;
         }
         .job-details {
-            color: #999;
+            color: #8a8a8a;
             font-size: 0.813rem;
             margin-bottom: 1rem;
             line-height: 1.5;
@@ -85,7 +86,7 @@
         }
         .job-stats {
             font-size: 0.813rem;
-            color: #999;
+            color: #8a8a8a;
         }
         .job-actions {
             display: flex;
@@ -124,7 +125,7 @@
             padding: 2rem;
         }
         .info-note {
-            background: rgba(10, 132, 255, 0.1);
+            background: rgba(10, 132, 255, 0.08);
             border-left: 3px solid #0a84ff;
             border-radius: 6px;
             padding: 1rem;
@@ -150,18 +151,20 @@
             border-radius: 6px;
             transition: all 0.2s ease;
             display: inline-block;
+            background: #1e1e1e;
         }
         .back-link a:hover {
             background: #2a2a2a;
+            border-color: #0a84ff;
         }
         footer {
             text-align: center;
             padding: 2rem;
-            background: #252525;
-            color: #999;
+            background: #0a0a0a;
+            color: #666;
             font-size: 0.813rem;
             margin-top: auto;
-            border-top: 1px solid #3a3a3a;
+            border-top: 1px solid #2a2a2a;
         }
         footer a {
             color: #0a84ff;

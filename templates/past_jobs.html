@@ -55,6 +55,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             border: 1px solid #333;
             flex: 1;
+            position: relative;
         }
         h1 {
             color: #ffffff;
@@ -221,6 +222,26 @@
                 flex: 1;
             }
         }
+        .logout-link {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+        .logout-link a {
+            color: #0a84ff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            background: #1e1e1e;
+        }
+        .logout-link a:hover {
+            background: #2a2a2a;
+            border-color: #0a84ff;
+        }
     </style>
 </head>
 <body>
@@ -231,8 +252,8 @@
         </a>
     </div>
     <div class="container">
-        <div class="nav-link">
-            <a href="{{ url_for('index') }}">← Back to Downloader</a>
+        <div class="logout-link">
+            <a href="{{ url_for('logout') }}">Logout</a>
         </div>
         <h1>Past Jobs</h1>
         <div class="info-note">

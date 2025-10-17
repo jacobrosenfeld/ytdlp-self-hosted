@@ -17,7 +17,7 @@ Python Flask web application that wraps yt-dlp and ffmpeg for video downloading 
 - [x] Dynamic timestamp input fields
 - [x] Clickable headers for navigation
 - [x] Responsive design
-- [x] Basic HTTP authentication for security
+- [x] Session-based authentication with login/logout forms (replaced HTTP basic auth)
 - [x] Comprehensive documentation
 
 ### Design System
@@ -63,7 +63,6 @@ Python Flask web application that wraps yt-dlp and ffmpeg for video downloading 
 - Error messages stored as dict with status and message
 
 ### Future Considerations
-- Authentication/authorization for production
 - Rate limiting
 - Production WSGI server (gunicorn)
 - HTTPS/SSL configuration

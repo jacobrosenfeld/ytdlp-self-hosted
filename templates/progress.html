@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ company_short_name }} Video Downloader - Processing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+            overflow-x: hidden;
+        }
+        .hero {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+        .hero h1 {
+            color: white;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .hero p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+        .container {
+            max-width: 500px;
+            margin: 4rem auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex: 1;
+            position: relative;
+            text-align: center;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 20px 20px 0 0;
+        }
+        .progress-container {
+            margin: 2rem 0;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        .status {
+            margin: 1rem 0;
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+        .spinner {
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            border-left: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        footer a:hover {
+            color: #764ba2;
+        }
+        .footer-content p {
+            margin: 0.5rem 0;
+        }
+        .contact-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .contact-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>{{ company_short_name }}</h1>
+        <p>Professional Video Downloader</p>
+    </div>
+    <div class="container">
+        <h1>Processing Your Request</h1>
+        <p>Please wait while we download and process your video...</p>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="spinner" id="spinner"></div>
+        <div class="status" id="status">Initializing...</div>
+    </div>
+    <footer>
+        <div class="footer-content">
+            <p>Made with ❤️ in {{ location }}</p>
+            <p>© {{ current_year }} {{ company_short_name }}. All rights reserved.</p>
+            <p><a href="mailto:{{ support_email }}" class="contact-btn">Contact Support</a></p>
+        </div>
+    </footer>
+
+    <script>
+        const downloadId = '{{ download_id }}';
+        const progressFill = document.getElementById('progress-fill');
+        const statusDiv = document.getElementById('status');
+        const spinner = document.getElementById('spinner');
+
+        function checkProgress() {
+            fetch(`/api/progress/${downloadId}`)
+                .then(response => response.json())
+                .then(data => {
+                    progressFill.style.width = data.progress + '%';
+                    
+                    if (data.status === 'error') {
+                        statusDiv.textContent = 'Error: ' + (data.message || 'Download failed');
+                        spinner.style.display = 'none';
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 3000);
+                    } else if (data.status === 'complete') {
+                        statusDiv.textContent = 'Complete! Redirecting...';
+                        spinner.style.display = 'none';
+                        setTimeout(() => {
+                            window.location.href = `/result/${downloadId}`;
+                        }, 1000);
+                    } else {
+                        statusDiv.textContent = `Processing... ${data.progress}%`;
+                        setTimeout(checkProgress, 1000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking progress:', error);
+                    setTimeout(checkProgress, 2000);
+                });
+        }
+
+        // Start checking progress
+        checkProgress();
+    </script>
+</body>
+</html>

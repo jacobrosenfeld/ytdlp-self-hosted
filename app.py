@@ -7,6 +7,7 @@ import datetime
 from dotenv import load_dotenv
 import time
 import shutil
+import threading
 
 load_dotenv()
 
@@ -19,6 +20,9 @@ for d in [DOWNLOAD_DIR, CACHE_DIR]:
     if not os.path.exists(d):
         os.makedirs(d)
 
+# Global progress tracking
+progress_data = {}
+
 def cleanup_cache():
     """Remove cache files older than 3 days."""
     now = time.time()
@@ -28,6 +32,119 @@ def cleanup_cache():
         if os.path.isfile(filepath):
             if now - os.path.getmtime(filepath) > max_age:
                 os.remove(filepath)
+
+def download_video_async(download_id, url, timestamps):
+    """Background function to download and process video."""
+    try:
+        progress_data[download_id] = 0
+        
+        output_dir = os.path.join(DOWNLOAD_DIR, download_id)
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Download options with progress hook
+        def progress_hook(d):
+            if d['status'] == 'downloading':
+                if 'total_bytes' in d and d['total_bytes'] > 0:
+                    progress = int((d['downloaded_bytes'] / d['total_bytes']) * 100)
+                    progress_data[download_id] = progress
+            elif d['status'] == 'finished':
+                progress_data[download_id] = 100
+        
+        ydl_opts = {
+            'format': 'bestvideo+bestaudio/best',
+            'outtmpl': os.path.join(CACHE_DIR, '%(id)s.%(ext)s'),
+            'merge_output_format': 'mp4',
+            'progress_hooks': [progress_hook],
+        }
+        
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            video_id = info['id']
+            cache_path = os.path.join(CACHE_DIR, f"{video_id}.mp4")
+            
+            # Check if cached
+            if os.path.exists(cache_path) and time.time() - os.path.getmtime(cache_path) < 3 * 24 * 3600:
+                full_mp4 = cache_path
+                progress_data[download_id] = 50  # Skip download step
+            else:
+                # Download to cache
+                ydl.download([url])
+                full_mp4 = cache_path
+                progress_data[download_id] = 50
+            
+            title = info.get('title', 'video').replace('/', '_').replace('\\', '_')
+            current_time = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            
+            # For full download
+            if not timestamps:
+                full_video_name = f"{title}_{current_time}.mp4"
+                full_video_path = os.path.join(output_dir, full_video_name)
+                shutil.copy2(full_mp4, full_video_path)
+                progress_data[download_id] = 100
+                return
+            
+            # For snippets
+            timestamp_list = [t.strip() for t in timestamps.split(',') if t.strip()]
+            snippets = []
+            total_snippets = len(timestamp_list)
+            
+            for i, ts in enumerate(timestamp_list):
+                start, end = ts.split('-') if '-' in ts else (ts, None)
+                snippet_name = f"{title}_{current_time}_{start.replace(':', '')}-{'end' if end is None else end.replace(':', '')}.mp4"
+                snippet_path = os.path.join(output_dir, snippet_name)
+                cut_video(full_mp4, snippet_path, start.strip(), end.strip() if end else None)
+                snippets.append(snippet_path)
+                
+                # Update progress for cutting
+                progress = 50 + int(((i + 1) / total_snippets) * 50)
+                progress_data[download_id] = progress
+            
+            progress_data[download_id] = 100
+            
+    except Exception as e:
+        progress_data[download_id] = -1  # Error state
+        print(f"Download error: {e}")
+    """Remove cache files older than 3 days."""
+    now = time.time()
+    max_age = 3 * 24 * 3600  # 3 days in seconds
+    for filename in os.listdir(CACHE_DIR):
+        filepath = os.path.join(CACHE_DIR, filename)
+        if os.path.isfile(filepath):
+            if now - os.path.getmtime(filepath) > max_age:
+                os.remove(filepath)
+
+@app.route('/progress/<download_id>')
+def progress_page(download_id):
+    return render_template('progress.html', download_id=download_id, **get_template_vars())
+
+@app.route('/api/progress/<download_id>')
+def get_progress_api(download_id):
+    progress = progress_data.get(download_id, 0)
+    if progress == -1:
+        return {'progress': 0, 'status': 'error', 'message': 'Download failed'}
+    elif progress >= 100:
+        return {'progress': 100, 'status': 'complete'}
+    else:
+        return {'progress': progress, 'status': 'processing'}
+
+@app.route('/result/<download_id>')
+def result(download_id):
+    output_dir = os.path.join(DOWNLOAD_DIR, download_id)
+    if not os.path.exists(output_dir):
+        flash('Download not found.')
+        return redirect(url_for('index'))
+    
+    files = []
+    for filename in os.listdir(output_dir):
+        filepath = os.path.join(output_dir, filename)
+        if os.path.isfile(filepath):
+            files.append(filepath)
+    
+    if not files:
+        flash('No files found for this download.')
+        return redirect(url_for('index'))
+    
+    return render_template('result.html', files=files, download_id=download_id, **get_template_vars())
 
 def get_template_vars():
     return {
@@ -51,55 +168,14 @@ def index():
         
         # Generate unique ID for this download
         download_id = str(uuid.uuid4())
-        output_dir = os.path.join(DOWNLOAD_DIR, download_id)
-        os.makedirs(output_dir)
         
-        # Download options
-        ydl_opts = {
-            'format': 'bestvideo+bestaudio/best',
-            'outtmpl': os.path.join(CACHE_DIR, '%(id)s.%(ext)s'),  # Use video ID for cache
-            'merge_output_format': 'mp4',
-        }
+        # Start background download
+        thread = threading.Thread(target=download_video_async, args=(download_id, url, timestamps))
+        thread.daemon = True
+        thread.start()
         
-        try:
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url, download=False)  # First, get info without downloading
-                video_id = info['id']
-                cache_path = os.path.join(CACHE_DIR, f"{video_id}.mp4")
-                
-                # Check if cached
-                if os.path.exists(cache_path) and time.time() - os.path.getmtime(cache_path) < 3 * 24 * 3600:
-                    # Use cached file
-                    full_mp4 = cache_path
-                else:
-                    # Download to cache
-                    ydl.download([url])
-                    full_mp4 = cache_path  # Assuming merge creates this
-                
-                title = info.get('title', 'video').replace('/', '_').replace('\\', '_')
-                current_time = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-                
-                # For full download
-                if not timestamps:
-                    full_video_name = f"{title}_{current_time}.mp4"
-                    full_video_path = os.path.join(output_dir, full_video_name)
-                    shutil.copy2(full_mp4, full_video_path)
-                    return render_template('result.html', files=[full_video_path], download_id=download_id, **get_template_vars())
-                
-                # For snippets
-                timestamp_list = [t.strip() for t in timestamps.split(',') if t.strip()]
-                snippets = []
-                for ts in timestamp_list:
-                    start, end = ts.split('-') if '-' in ts else (ts, None)
-                    snippet_name = f"{title}_{current_time}_{start.replace(':', '')}-{'end' if end is None else end.replace(':', '')}.mp4"
-                    snippet_path = os.path.join(output_dir, snippet_name)
-                    cut_video(full_mp4, snippet_path, start.strip(), end.strip() if end else None)
-                    snippets.append(snippet_path)
-                
-                return render_template('result.html', files=snippets, download_id=download_id, **get_template_vars())
-        except Exception as e:
-            flash(f'Error: {str(e)}')
-            return redirect(url_for('index'))
+        # Redirect to progress page
+        return redirect(url_for('progress_page', download_id=download_id))
     
     return render_template('index.html', **get_template_vars())
 

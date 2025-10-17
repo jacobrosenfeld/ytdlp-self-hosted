@@ -80,9 +80,36 @@ COMPANY_SHORT_NAME=YourCompany       # Short name (used in footer)
 SUPPORT_EMAIL=support@yourcompany.com
 LOCATION=Teaneck, NJ
 
+# Authentication (REQUIRED for security)
+AUTH_USERNAME=admin                   # Username for basic authentication
+AUTH_PASSWORD=change_this_password    # Password for basic authentication
+
 # Security (optional)
 SECRET_KEY=your-secret-key-here      # Flask secret key
 ```
+
+## Authentication
+
+This application includes **basic HTTP authentication** for security. You **MUST** configure authentication before deploying to a server.
+
+### Required Authentication Setup
+
+1. **Set strong credentials** in your `.env` file:
+   ```env
+   AUTH_USERNAME=your_username
+   AUTH_PASSWORD=your_strong_password
+   ```
+
+2. **Change the default password** - never use the example password in production
+
+3. **Use HTTPS** in production to protect credentials in transit
+
+### How Authentication Works
+
+- All pages require authentication
+- Browser will prompt for username/password on first access
+- Credentials are checked against environment variables
+- Failed authentication returns HTTP 401 Unauthorized
 
 ## Usage
 
@@ -157,6 +184,7 @@ Jobs older than 3 days are automatically cleaned up.
 ⚠️ **Important Security Notes**:
 
 - This application allows downloading arbitrary internet content to your server
+- **Basic HTTP authentication is included** - configure strong credentials before deployment
 - Implement proper authentication/authorization in production environments
 - Consider rate limiting to prevent abuse
 - Run behind a reverse proxy (nginx, Apache) with SSL/TLS

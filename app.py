@@ -10,11 +10,26 @@ from datetime import datetime
 import yt_dlp
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, send_file, flash, redirect, url_for
+from flask_httpauth import HTTPBasicAuth
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'your_secret_key')  # Change this in production
+
+# Authentication setup
+auth = HTTPBasicAuth()
+
+# Get authentication credentials from environment
+AUTH_USERNAME = os.getenv('AUTH_USERNAME', 'admin')
+AUTH_PASSWORD = os.getenv('AUTH_PASSWORD', 'password')
+
+@auth.verify_password
+def verify_password(username, password):
+    """Verify username and password for basic authentication."""
+    if username == AUTH_USERNAME and password == AUTH_PASSWORD:
+        return username
+    return None
 
 DOWNLOAD_DIR = 'downloads'
 CACHE_DIR = 'cache'
@@ -217,10 +232,12 @@ def cleanup_cache():
                     shutil.rmtree(cut_path)
 
 @app.route('/progress/<download_id>')
+@auth.login_required
 def progress_page(download_id):
     return render_template('progress.html', download_id=download_id, **get_template_vars())
 
 @app.route('/api/progress/<download_id>')
+@auth.login_required
 def get_progress_api(download_id):
     progress = progress_data.get(download_id, 0)
     
@@ -237,6 +254,7 @@ def get_progress_api(download_id):
         return {'progress': progress, 'status': 'processing'}
 
 @app.route('/past-jobs')
+@auth.login_required
 def past_jobs():
     cleanup_old_jobs()  # Clean expired jobs
     jobs = load_jobs()
@@ -252,6 +270,7 @@ def past_jobs():
     return render_template('past_jobs.html', jobs=jobs_list, **get_template_vars())
 
 @app.route('/redownload/<job_id>')
+@auth.login_required
 def redownload(job_id):
     jobs = load_jobs()
     if job_id not in jobs:
@@ -267,6 +286,7 @@ def redownload(job_id):
     return redirect(url_for('progress_page', download_id=download_id))
 
 @app.route('/result/<download_id>')
+@auth.login_required
 def result(download_id):
     output_dir = os.path.join(DOWNLOAD_DIR, download_id)
     if not os.path.exists(output_dir):
@@ -320,6 +340,7 @@ def get_template_vars():
     }
 
 @app.route('/', methods=['GET', 'POST'])
+@auth.login_required
 def index():
     cleanup_cache()  # Clean old cache files on each request
     cleanup_old_jobs()  # Clean old jobs on each request
@@ -341,6 +362,7 @@ def index():
     return render_template('index.html', **get_template_vars())
 
 @app.route('/download/<download_id>/<filename>')
+@auth.login_required
 def download(download_id, filename):
     file_path = os.path.join(DOWNLOAD_DIR, download_id, filename)
     if os.path.exists(file_path):

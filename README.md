@@ -13,6 +13,7 @@ A modern, self-hosted web application that wraps yt-dlp and ffmpeg to download a
 
 ### User Experience
 - **Modern UI**: Clean, dark-themed interface inspired by Final Cut Pro X
+- **Session-Based Authentication**: Sleek login/logout system integrated into the app design
 - **Real-Time Progress**: Live progress bar with download percentage
 - **Past Jobs History**: View and re-download from your last 3 days of completed jobs
 - **Error Handling**: User-friendly error messages with helpful guidance
@@ -81,8 +82,8 @@ SUPPORT_EMAIL=support@yourcompany.com
 LOCATION=Teaneck, NJ
 
 # Authentication (REQUIRED for security)
-AUTH_USERNAME=admin                   # Username for basic authentication
-AUTH_PASSWORD=change_this_password    # Password for basic authentication
+AUTH_USERNAME=admin                   # Username for login authentication
+AUTH_PASSWORD=change_this_password    # Password for login authentication
 
 # Security (optional)
 SECRET_KEY=your-secret-key-here      # Flask secret key
@@ -90,7 +91,7 @@ SECRET_KEY=your-secret-key-here      # Flask secret key
 
 ## Authentication
 
-This application includes **basic HTTP authentication** for security. You **MUST** configure authentication before deploying to a server.
+This application includes **session-based authentication** for security. You **MUST** configure authentication before deploying to a server.
 
 ### Required Authentication Setup
 
@@ -106,10 +107,12 @@ This application includes **basic HTTP authentication** for security. You **MUST
 
 ### How Authentication Works
 
-- All pages require authentication
-- Browser will prompt for username/password on first access
-- Credentials are checked against environment variables
-- Failed authentication returns HTTP 401 Unauthorized
+- All pages require authentication via login form
+- Users see a sleek login page matching the app's FCP X theme
+- Successful login creates a session that persists across requests
+- Failed login shows error message on the login page
+- Logout link available in top-right corner of all pages
+- Sessions automatically expire when browser is closed
 
 ## Usage
 
@@ -184,7 +187,7 @@ Jobs older than 3 days are automatically cleaned up.
 ⚠️ **Important Security Notes**:
 
 - This application allows downloading arbitrary internet content to your server
-- **Basic HTTP authentication is included** - configure strong credentials before deployment
+- **Session-based authentication is included** - configure strong credentials before deployment
 - Implement proper authentication/authorization in production environments
 - Consider rate limiting to prevent abuse
 - Run behind a reverse proxy (nginx, Apache) with SSL/TLS

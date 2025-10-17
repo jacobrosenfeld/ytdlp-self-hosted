@@ -295,9 +295,9 @@
                 <div class="help-text" style="margin-bottom: 0.5rem;">Add time ranges to extract specific clips. Supports half-second precision (e.g., 00:01:30.5). Leave empty to download the full video.</div>
                 <div id="timestamp-container">
                     <div class="timestamp-row">
-                        <input type="text" class="timestamp-input" placeholder="Start (e.g., 00:00:10.5)" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}(\.[0-9])?">
+                        <input type="text" class="timestamp-input" placeholder="00:00:10.5" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}(\.[0-9])?">
                         <span class="timestamp-separator">to</span>
-                        <input type="text" class="timestamp-input" placeholder="End (e.g., 00:01:00.0)" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}(\.[0-9])?">
+                        <input type="text" class="timestamp-input" placeholder="00:01:00.0" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}(\.[0-9])?">
                         <button type="button" class="remove-timestamp-btn" onclick="removeTimestamp(this)" style="display:none;">✕</button>
                     </div>
                 </div>
@@ -325,9 +325,9 @@
             const newRow = document.createElement('div');
             newRow.className = 'timestamp-row';
             newRow.innerHTML = `
-                <input type="text" class="timestamp-input" placeholder="Start (e.g., 00:00:10.5)" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}(\\.[0-9])?">
+                <input type="text" class="timestamp-input" placeholder="00:00:10.5" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}(\\.[0-9])?">
                 <span class="timestamp-separator">to</span>
-                <input type="text" class="timestamp-input" placeholder="End (e.g., 00:01:00.0)" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}(\\.[0-9])?">
+                <input type="text" class="timestamp-input" placeholder="00:01:00.0" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}(\\.[0-9])?">
                 <button type="button" class="remove-timestamp-btn" onclick="removeTimestamp(this)">✕</button>
             `;
             container.appendChild(newRow);

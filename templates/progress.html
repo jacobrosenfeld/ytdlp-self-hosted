@@ -85,6 +85,15 @@
             font-size: 1.1rem;
             color: #2c3e50;
         }
+        .error-message {
+            color: #e74c3c;
+            font-weight: 600;
+            padding: 1rem;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            margin: 1rem 0;
+        }
         .spinner {
             border: 4px solid rgba(102, 126, 234, 0.3);
             border-left: 4px solid #667eea;
@@ -176,11 +185,12 @@
                     progressFill.style.width = data.progress + '%';
                     
                     if (data.status === 'error') {
-                        statusDiv.textContent = 'Error: ' + (data.message || 'Download failed');
+                        statusDiv.className = 'status error-message';
+                        statusDiv.innerHTML = '<strong>Error:</strong><br>' + (data.message || 'Download failed');
                         spinner.style.display = 'none';
                         setTimeout(() => {
                             window.location.href = '/';
-                        }, 3000);
+                        }, 5000);
                     } else if (data.status === 'complete') {
                         statusDiv.textContent = 'Complete! Redirecting...';
                         spinner.style.display = 'none';

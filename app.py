@@ -49,7 +49,8 @@ def cleanup_old_jobs():
     
     jobs_to_remove = []
     for job_id, job in jobs.items():
-        if current_time - job['created_timestamp'] > max_age:
+        # Check if job has created_timestamp (older jobs may not)
+        if 'created_timestamp' in job and current_time - job['created_timestamp'] > max_age:
             jobs_to_remove.append(job_id)
             # Remove download directory
             download_path = os.path.join(DOWNLOAD_DIR, job_id)
@@ -124,7 +125,9 @@ def download_video_async(download_id, url, timestamps):
                 full_mp4 = cache_path
                 progress_data[download_id] = 50
             
-            # Store job info for result page
+            # Store job info for result page with timestamp
+            job_info['created_timestamp'] = time.time()
+            job_info['created_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             jobs = load_jobs()
             jobs[download_id] = job_info
             save_jobs(jobs)
@@ -255,6 +258,9 @@ def redownload(job_id):
     
     # Redirect to progress page
     return redirect(url_for('progress_page', download_id=download_id))
+
+@app.route('/result/<download_id>')
+def result(download_id):
     output_dir = os.path.join(DOWNLOAD_DIR, download_id)
     if not os.path.exists(output_dir):
         flash('Download not found.')
@@ -282,12 +288,15 @@ def redownload(job_id):
     jobs = load_jobs()
     job_info = jobs.get(download_id, {})
     
-    # Save/update job metadata with file info
+    # Save/update job metadata with file info (preserve existing data)
+    if 'created_timestamp' not in job_info:
+        job_info['created_timestamp'] = time.time()
+    if 'created_date' not in job_info:
+        job_info['created_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
     job_info.update({
         'file_count': len(files),
         'total_size_mb': round(total_size / (1024 * 1024), 2),
-        'created_timestamp': time.time(),
-        'created_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     })
     jobs[download_id] = job_info
     save_jobs(jobs)

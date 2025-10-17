@@ -184,8 +184,9 @@ def download_video_async(download_id, url, timestamps):
             progress_data[download_id] = 100
             
     except Exception as e:
-        progress_data[download_id] = -1  # Error state
-        print(f"Download error: {e}")
+        error_message = str(e)
+        progress_data[download_id] = {'status': 'error', 'message': error_message}
+        print(f"Download error: {error_message}")
 
 def start_download(url, timestamps):
     """Start a download and return the download_id."""
@@ -222,6 +223,12 @@ def progress_page(download_id):
 @app.route('/api/progress/<download_id>')
 def get_progress_api(download_id):
     progress = progress_data.get(download_id, 0)
+    
+    # Check if it's an error dictionary
+    if isinstance(progress, dict) and progress.get('status') == 'error':
+        return {'progress': 0, 'status': 'error', 'message': progress.get('message', 'Unknown error occurred')}
+    
+    # Legacy error handling (for -1 value)
     if progress == -1:
         return {'progress': 0, 'status': 'error', 'message': 'Download failed'}
     elif progress >= 100:
@@ -350,17 +357,17 @@ def cut_video(input_path, output_path, start, end=None):
     subprocess.run(cmd, check=True)
 
 def calculate_duration(start, end):
-    # Simple duration calculation, assuming HH:MM:SS format
+    # Duration calculation supporting HH:MM:SS.D format (with optional decimal seconds)
     def to_seconds(time_str):
         parts = time_str.split(':')
         if len(parts) == 3:
-            h, m, s = map(int, parts)
+            h, m, s = int(parts[0]), int(parts[1]), float(parts[2])
             return h*3600 + m*60 + s
         elif len(parts) == 2:
-            m, s = map(int, parts)
+            m, s = int(parts[0]), float(parts[1])
             return m*60 + s
         else:
-            return int(parts[0])
+            return float(parts[0])
     
     start_sec = to_seconds(start)
     end_sec = to_seconds(end)

@@ -164,6 +164,68 @@
             background: #9b59b6;
             color: white;
         }
+        .timestamp-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .timestamp-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Inter', monospace;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .timestamp-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .timestamp-separator {
+            color: #7f8c8d;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .remove-timestamp-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .remove-timestamp-btn:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+        .add-timestamp-btn {
+            background: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+            border: 2px dashed #27ae60;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+        .add-timestamp-btn:hover {
+            background: rgba(46, 204, 113, 0.2);
+            border-style: solid;
+        }
         footer { 
             text-align: center; 
             padding: 2rem; 
@@ -230,8 +292,17 @@
             
             <div class="form-group">
                 <label for="timestamps">Timestamps (optional):</label>
-                <textarea id="timestamps" name="timestamps" placeholder="00:00:10-00:01:00, 00:02:00-00:03:00"></textarea>
-                <div class="help-text">Enter start-end times separated by commas. Leave empty to download the full video.</div>
+                <div class="help-text" style="margin-bottom: 0.5rem;">Add time ranges to extract specific clips. Leave empty to download the full video.</div>
+                <div id="timestamp-container">
+                    <div class="timestamp-row">
+                        <input type="text" class="timestamp-input" placeholder="Start (e.g., 00:00:10)" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}">
+                        <span class="timestamp-separator">to</span>
+                        <input type="text" class="timestamp-input" placeholder="End (e.g., 00:01:00)" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}">
+                        <button type="button" class="remove-timestamp-btn" onclick="removeTimestamp(this)" style="display:none;">✕</button>
+                    </div>
+                </div>
+                <button type="button" class="add-timestamp-btn" onclick="addTimestamp()">+ Add Another Time Range</button>
+                <input type="hidden" id="timestamps" name="timestamps">
             </div>
             
             <button type="submit">Download Video</button>
@@ -248,5 +319,59 @@
             <p><a href="mailto:{{ support_email }}" class="contact-btn">Contact Support</a></p>
         </div>
     </footer>
+    <script>
+        function addTimestamp() {
+            const container = document.getElementById('timestamp-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'timestamp-row';
+            newRow.innerHTML = `
+                <input type="text" class="timestamp-input" placeholder="Start (e.g., 00:00:10)" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}">
+                <span class="timestamp-separator">to</span>
+                <input type="text" class="timestamp-input" placeholder="End (e.g., 00:01:00)" pattern="[0-9]{1,2}:[0-9]{2}:[0-9]{2}">
+                <button type="button" class="remove-timestamp-btn" onclick="removeTimestamp(this)">✕</button>
+            `;
+            container.appendChild(newRow);
+            updateRemoveButtons();
+        }
+
+        function removeTimestamp(button) {
+            const row = button.parentElement;
+            row.remove();
+            updateRemoveButtons();
+        }
+
+        function updateRemoveButtons() {
+            const rows = document.querySelectorAll('.timestamp-row');
+            rows.forEach((row, index) => {
+                const removeBtn = row.querySelector('.remove-timestamp-btn');
+                if (rows.length === 1) {
+                    removeBtn.style.display = 'none';
+                } else {
+                    removeBtn.style.display = 'flex';
+                }
+            });
+        }
+
+        // Collect timestamps before form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const rows = document.querySelectorAll('.timestamp-row');
+            const timestamps = [];
+            
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('.timestamp-input');
+                const start = inputs[0].value.trim();
+                const end = inputs[1].value.trim();
+                
+                if (start && end) {
+                    timestamps.push(`${start}-${end}`);
+                }
+            });
+            
+            document.getElementById('timestamps').value = timestamps.join(', ');
+        });
+
+        // Initialize remove buttons visibility
+        updateRemoveButtons();
+    </script>
 </body>
 </html>

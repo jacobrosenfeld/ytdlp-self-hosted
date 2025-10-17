@@ -138,6 +138,19 @@
             font-style: italic;
             padding: 2rem;
         }
+        .info-note {
+            background: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid #3498db;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+        .info-note p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
         .back-link {
             margin-top: 40px;
             text-align: center;
@@ -222,6 +235,9 @@
     </div>
     <div class="container">
         <h1>Past Jobs</h1>
+        <div class="info-note">
+            <p>📋 This section shows completed downloads from the last 3 days. Older jobs are automatically removed to save server space.</p>
+        </div>
         {% if jobs %}
             <ul class="jobs-list">
                 {% for job in jobs %}

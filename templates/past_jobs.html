@@ -25,6 +25,15 @@
             padding: 1.5rem 0;
             text-align: center;
         }
+        .hero a {
+            text-decoration: none;
+            color: inherit;
+            display: inline-block;
+            transition: opacity 0.2s ease;
+        }
+        .hero a:hover {
+            opacity: 0.8;
+        }
         .hero h1 {
             color: #ffffff;
             font-weight: 600;
@@ -137,11 +146,11 @@
             font-size: 0.875rem;
             line-height: 1.5;
         }
-        .back-link {
-            margin-top: 2rem;
+        .nav-link {
+            margin-bottom: 1.5rem;
             text-align: center;
         }
-        .back-link a {
+        .nav-link a {
             color: #0a84ff;
             text-decoration: none;
             font-weight: 500;
@@ -153,7 +162,7 @@
             display: inline-block;
             background: #1e1e1e;
         }
-        .back-link a:hover {
+        .nav-link a:hover {
             background: #2a2a2a;
             border-color: #0a84ff;
         }
@@ -216,10 +225,15 @@
 </head>
 <body>
     <div class="hero">
-        <h1>{{ company_name }}</h1>
-        <p>Internal Video Downloader</p>
+        <a href="{{ url_for('index') }}">
+            <h1>{{ company_name }}</h1>
+            <p>Internal Video Downloader</p>
+        </a>
     </div>
     <div class="container">
+        <div class="nav-link">
+            <a href="{{ url_for('index') }}">← Back to Downloader</a>
+        </div>
         <h1>Past Jobs</h1>
         <div class="info-note">
             <p>📋 This section shows completed downloads from the last 3 days. Older jobs are automatically removed to save server space.</p>
@@ -254,9 +268,6 @@
                 <p>No past jobs found. Start by downloading some videos!</p>
             </div>
         {% endif %}
-        <div class="back-link">
-            <a href="{{ url_for('index') }}">← Back to Downloader</a>
-        </div>
     </div>
     <footer>
         <div class="footer-content">

@@ -67,26 +67,56 @@
             margin-bottom: 30px; 
             font-weight: 600;
         }
+        .file-info {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .file-info h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
         .download-list {
             list-style: none;
             padding: 0;
-            margin: 30px 0;
+            margin: 0;
         }
         .download-list li {
-            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .file-details {
+            flex: 1;
+        }
+        .file-name {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+        .file-size {
+            color: #7f8c8d;
+            font-size: 0.9rem;
         }
         .download-btn { 
             display: inline-block; 
-            padding: 1rem 2rem; 
+            padding: 0.75rem 1.5rem; 
             background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); 
             color: white; 
             text-decoration: none; 
-            border-radius: 12px; 
+            border-radius: 8px; 
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: all 0.3s ease; 
             box-shadow: 0 4px 15px rgba(39, 174, 96, 0.2);
-            margin: 0.5rem;
         }
         .download-btn:hover { 
             transform: translateY(-2px); 
@@ -95,8 +125,36 @@
         .download-btn:active {
             transform: translateY(0);
         }
+        .download-all {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .download-all-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        }
+        .download-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
         .back-link { 
-            margin-top: 40px; 
+            margin: 0;
         }
         .back-link a {
             color: #667eea;
@@ -110,6 +168,23 @@
         }
         .back-link a:hover {
             background: #667eea;
+            color: white;
+        }
+        .past-jobs-link {
+            margin: 0;
+        }
+        .past-jobs-link a {
+            color: #9b59b6;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #9b59b6;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .past-jobs-link a:hover {
+            background: #9b59b6;
             color: white;
         }
         footer { 
@@ -162,14 +237,33 @@
     </div>
     <div class="container">
         <h1>Download Ready</h1>
-        <p>Your video(s) are ready for download:</p>
+        <div class="file-info">
+            <h3>Files Generated</h3>
+            <p>Your video has been processed successfully. Here are the downloadable files:</p>
+        </div>
         <ul class="download-list">
             {% for file in files %}
-                <li><a href="{{ url_for('download', download_id=download_id, filename=file.split('/')[-1]) }}" class="download-btn">Download {{ file.split('/')[-1] }}</a></li>
+                <li>
+                    <div class="file-details">
+                        <div class="file-name">{{ file.name }}</div>
+                        <div class="file-size">{{ file.size_mb }} MB</div>
+                    </div>
+                    <a href="{{ url_for('download', download_id=download_id, filename=file.name) }}" class="download-btn">Download</a>
+                </li>
             {% endfor %}
         </ul>
-        <div class="back-link">
-            <a href="{{ url_for('index') }}">← Back to Downloader</a>
+        {% if files|length > 1 %}
+        <div class="download-all">
+            <p>Tip: Right-click individual download buttons and select "Save Link As" to download multiple files, or use your browser's download manager.</p>
+        </div>
+        {% endif %}
+        <div class="actions">
+            <div class="back-link">
+                <a href="{{ url_for('index') }}">← New Download</a>
+            </div>
+            <div class="past-jobs-link">
+                <a href="{{ url_for('past_jobs') }}">View Past Jobs</a>
+            </div>
         </div>
     </div>
     <footer>

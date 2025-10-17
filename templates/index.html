@@ -144,6 +144,26 @@
             border-left: 4px solid #e74c3c;
             backdrop-filter: blur(10px);
         }
+        .past-jobs-section {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .past-jobs-btn {
+            display: inline-block;
+            color: #9b59b6;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid #9b59b6;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .past-jobs-btn:hover {
+            background: #9b59b6;
+            color: white;
+        }
         footer { 
             text-align: center; 
             padding: 2rem; 
@@ -216,6 +236,10 @@
             
             <button type="submit">Download Video</button>
         </form>
+        
+        <div class="past-jobs-section">
+            <a href="{{ url_for('past_jobs') }}" class="past-jobs-btn">View Past Downloads</a>
+        </div>
     </div>
     <footer>
         <div class="footer-content">

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ company_short_name }} Video Downloader - Past Jobs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+            overflow-x: hidden;
+        }
+        .hero {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+        .hero h1 {
+            color: white;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .hero p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+        .container {
+            max-width: 800px;
+            margin: 4rem auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex: 1;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 20px 20px 0 0;
+        }
+        h1 {
+            color: #34495e;
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .jobs-list {
+            list-style: none;
+            padding: 0;
+        }
+        .job-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .job-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        .job-details {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        .job-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .job-stats {
+            font-size: 0.9rem;
+            color: #34495e;
+        }
+        .job-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.8);
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        .no-jobs {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 2rem;
+        }
+        .back-link {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .back-link a:hover {
+            background: #667eea;
+            color: white;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        footer a:hover {
+            color: #764ba2;
+        }
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .footer-content p {
+            margin: 5px 0;
+        }
+        .contact-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .contact-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 2rem 1rem;
+                padding: 1.5rem;
+            }
+            .job-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .job-actions {
+                width: 100%;
+            }
+            .btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>{{ company_short_name }}</h1>
+        <p>Professional Video Downloader</p>
+    </div>
+    <div class="container">
+        <h1>Past Jobs</h1>
+        {% if jobs %}
+            <ul class="jobs-list">
+                {% for job in jobs %}
+                <li class="job-item">
+                    <div class="job-title">{{ job.title }}</div>
+                    <div class="job-details">
+                        URL: {{ job.url }}<br>
+                        {% if job.timestamps %}
+                        Timestamps: {{ job.timestamps }}
+                        {% else %}
+                        Full video download
+                        {% endif %}
+                    </div>
+                    <div class="job-meta">
+                        <div class="job-stats">
+                            {{ job.file_count }} file{{ 's' if job.file_count != 1 else '' }} • {{ job.total_size_mb }} MB • {{ job.created_date }}
+                        </div>
+                        <div class="job-actions">
+                            <a href="{{ url_for('redownload', job_id=job.id) }}" class="btn btn-primary">Download Again</a>
+                            <a href="{{ url_for('result', download_id=job.id) }}" class="btn btn-secondary">View Files</a>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="no-jobs">
+                <p>No past jobs found. Start by downloading some videos!</p>
+            </div>
+        {% endif %}
+        <div class="back-link">
+            <a href="{{ url_for('index') }}">← Back to Downloader</a>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-content">
+            <p>Made with ❤️ in {{ location }}</p>
+            <p>© {{ current_year }} {{ company_short_name }}. All rights reserved.</p>
+            <p><a href="mailto:{{ support_email }}" class="contact-btn">Contact Support</a></p>
+        </div>
+    </footer>
+</body>
+</html>

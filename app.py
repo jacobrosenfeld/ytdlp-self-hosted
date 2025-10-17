@@ -1,13 +1,15 @@
-from flask import Flask, request, render_template, send_file, flash, redirect, url_for
-import yt_dlp
+import json
 import os
-import subprocess
-import uuid
-import datetime
-from dotenv import load_dotenv
-import time
 import shutil
+import subprocess
 import threading
+import time
+import uuid
+from datetime import datetime
+
+import yt_dlp
+from dotenv import load_dotenv
+from flask import Flask, request, render_template, send_file, flash, redirect, url_for
 
 load_dotenv()
 
@@ -16,12 +18,49 @@ app.secret_key = os.getenv('SECRET_KEY', 'your_secret_key')  # Change this in pr
 
 DOWNLOAD_DIR = 'downloads'
 CACHE_DIR = 'cache'
+JOBS_FILE = 'jobs.json'
 for d in [DOWNLOAD_DIR, CACHE_DIR]:
     if not os.path.exists(d):
         os.makedirs(d)
 
 # Global progress tracking
 progress_data = {}
+
+def load_jobs():
+    """Load jobs from JSON file."""
+    if os.path.exists(JOBS_FILE):
+        try:
+            with open(JOBS_FILE, 'r') as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+def save_jobs(jobs):
+    """Save jobs to JSON file."""
+    with open(JOBS_FILE, 'w') as f:
+        json.dump(jobs, f, indent=2, default=str)
+
+def cleanup_old_jobs():
+    """Remove jobs older than 3 days and their associated files."""
+    jobs = load_jobs()
+    current_time = time.time()
+    max_age = 3 * 24 * 3600  # 3 days in seconds
+    
+    jobs_to_remove = []
+    for job_id, job in jobs.items():
+        if current_time - job['created_timestamp'] > max_age:
+            jobs_to_remove.append(job_id)
+            # Remove download directory
+            download_path = os.path.join(DOWNLOAD_DIR, job_id)
+            if os.path.exists(download_path):
+                shutil.rmtree(download_path)
+    
+    for job_id in jobs_to_remove:
+        del jobs[job_id]
+    
+    if jobs_to_remove:
+        save_jobs(jobs)
 
 def cleanup_cache():
     """Remove cache files older than 3 days."""
@@ -50,6 +89,9 @@ def download_video_async(download_id, url, timestamps):
         output_dir = os.path.join(DOWNLOAD_DIR, download_id)
         os.makedirs(output_dir, exist_ok=True)
         
+        # Store job info for later use
+        job_info = {'url': url, 'timestamps': timestamps}
+        
         # Download options with progress hook
         def progress_hook(d):
             if d['status'] == 'downloading':
@@ -70,6 +112,7 @@ def download_video_async(download_id, url, timestamps):
             info = ydl.extract_info(url, download=False)
             video_id = info['id']
             cache_path = os.path.join(CACHE_DIR, f"{video_id}.mp4")
+            job_info['title'] = info.get('title', 'Video').replace('/', '_').replace('\\', '_')
             
             # Check if cached
             if os.path.exists(cache_path) and time.time() - os.path.getmtime(cache_path) < 3 * 24 * 3600:
@@ -81,8 +124,13 @@ def download_video_async(download_id, url, timestamps):
                 full_mp4 = cache_path
                 progress_data[download_id] = 50
             
-            title = info.get('title', 'video').replace('/', '_').replace('\\', '_')
-            current_time = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            # Store job info for result page
+            jobs = load_jobs()
+            jobs[download_id] = job_info
+            save_jobs(jobs)
+            
+            title = job_info['title']
+            current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
             
             # For full download
             if not timestamps:
@@ -135,6 +183,19 @@ def download_video_async(download_id, url, timestamps):
     except Exception as e:
         progress_data[download_id] = -1  # Error state
         print(f"Download error: {e}")
+
+def start_download(url, timestamps):
+    """Start a download and return the download_id."""
+    download_id = str(uuid.uuid4())
+    
+    # Start background download
+    thread = threading.Thread(target=download_video_async, args=(download_id, url, timestamps))
+    thread.daemon = True
+    thread.start()
+    
+    return download_id
+
+def cleanup_cache():
     """Remove cache files older than 3 days."""
     now = time.time()
     max_age = 3 * 24 * 3600  # 3 days in seconds
@@ -143,6 +204,13 @@ def download_video_async(download_id, url, timestamps):
         if os.path.isfile(filepath):
             if now - os.path.getmtime(filepath) > max_age:
                 os.remove(filepath)
+        elif os.path.isdir(filepath) and filename == 'cuts':
+            # Clean cuts cache directories
+            cuts_dir = filepath
+            for cut_dir in os.listdir(cuts_dir):
+                cut_path = os.path.join(cuts_dir, cut_dir)
+                if os.path.isdir(cut_path) and now - os.path.getmtime(cut_path) > max_age:
+                    shutil.rmtree(cut_path)
 
 @app.route('/progress/<download_id>')
 def progress_page(download_id):
@@ -158,22 +226,71 @@ def get_progress_api(download_id):
     else:
         return {'progress': progress, 'status': 'processing'}
 
-@app.route('/result/<download_id>')
-def result(download_id):
+@app.route('/past-jobs')
+def past_jobs():
+    cleanup_old_jobs()  # Clean expired jobs
+    jobs = load_jobs()
+    
+    # Convert to list and sort by creation date (newest first)
+    jobs_list = []
+    for job_id, job in jobs.items():
+        job['id'] = job_id
+        jobs_list.append(job)
+    
+    jobs_list.sort(key=lambda x: x.get('created_timestamp', 0), reverse=True)
+    
+    return render_template('past_jobs.html', jobs=jobs_list, **get_template_vars())
+
+@app.route('/redownload/<job_id>')
+def redownload(job_id):
+    jobs = load_jobs()
+    if job_id not in jobs:
+        flash('Job not found.')
+        return redirect(url_for('past_jobs'))
+    
+    job = jobs[job_id]
+    
+    # Start a new download with the same parameters
+    download_id = start_download(job['url'], job.get('timestamps', ''))
+    
+    # Redirect to progress page
+    return redirect(url_for('progress_page', download_id=download_id))
     output_dir = os.path.join(DOWNLOAD_DIR, download_id)
     if not os.path.exists(output_dir):
         flash('Download not found.')
         return redirect(url_for('index'))
     
     files = []
+    total_size = 0
     for filename in os.listdir(output_dir):
         filepath = os.path.join(output_dir, filename)
         if os.path.isfile(filepath):
-            files.append(filepath)
+            file_size = os.path.getsize(filepath)
+            files.append({
+                'name': filename,
+                'path': filepath,
+                'size': file_size,
+                'size_mb': round(file_size / (1024 * 1024), 2)
+            })
+            total_size += file_size
     
     if not files:
         flash('No files found for this download.')
         return redirect(url_for('index'))
+    
+    # Get job metadata
+    jobs = load_jobs()
+    job_info = jobs.get(download_id, {})
+    
+    # Save/update job metadata with file info
+    job_info.update({
+        'file_count': len(files),
+        'total_size_mb': round(total_size / (1024 * 1024), 2),
+        'created_timestamp': time.time(),
+        'created_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    })
+    jobs[download_id] = job_info
+    save_jobs(jobs)
     
     return render_template('result.html', files=files, download_id=download_id, **get_template_vars())
 
@@ -182,12 +299,13 @@ def get_template_vars():
         'company_short_name': os.getenv('COMPANY_SHORT_NAME', 'YourCompany'),
         'support_email': os.getenv('SUPPORT_EMAIL', 'support@yourcompany.com'),
         'location': os.getenv('LOCATION', 'Teaneck, NJ'),
-        'current_year': datetime.datetime.now().year
+        'current_year': datetime.now().year
     }
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     cleanup_cache()  # Clean old cache files on each request
+    cleanup_old_jobs()  # Clean old jobs on each request
     
     if request.method == 'POST':
         url = request.form['url']
@@ -197,13 +315,8 @@ def index():
             flash('Please provide a URL.')
             return redirect(url_for('index'))
         
-        # Generate unique ID for this download
-        download_id = str(uuid.uuid4())
-        
-        # Start background download
-        thread = threading.Thread(target=download_video_async, args=(download_id, url, timestamps))
-        thread.daemon = True
-        thread.start()
+        # Start download and get ID
+        download_id = start_download(url, timestamps)
         
         # Redirect to progress page
         return redirect(url_for('progress_page', download_id=download_id))

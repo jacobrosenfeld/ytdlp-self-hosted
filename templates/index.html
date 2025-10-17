@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: #333; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 50px auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 10px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            flex: 1; 
+        }
+        h1 { 
+            text-align: center; 
+            color: #4a4a4a; 
+            margin-bottom: 30px; 
+        }
+        label { 
+            display: block; 
+            margin-top: 20px; 
+            font-weight: bold; 
+            color: #555; 
+        }
+        input, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 8px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            font-size: 16px; 
+            box-sizing: border-box; 
+        }
+        textarea { 
+            resize: vertical; 
+            min-height: 80px; 
+        }
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            margin-top: 30px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            font-size: 18px; 
+            cursor: pointer; 
+            transition: transform 0.2s; 
+        }
+        button:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+        }
+        .flash { 
+            color: #e74c3c; 
+            background: #f8d7da; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-bottom: 20px; 
+        }
+        footer { 
+            text-align: center; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            color: #6c757d; 
+            font-size: 14px; 
+        }
+        footer a { 
+            color: #667eea; 
+            text-decoration: none; 
+        }
+        footer a:hover { 
+            text-decoration: underline; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Video Downloader</h1>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <form method="post">
+            <label for="url">Video URL:</label>
+            <input type="text" id="url" name="url" required placeholder="https://example.com/video">
+            
+            <label for="timestamps">Timestamps (optional, format: start-end, start-end,... e.g., 00:00:10-00:01:00, 00:02:00-00:03:00):</label>
+            <textarea id="timestamps" name="timestamps" placeholder="00:00:10-00:01:00"></textarea>
+            <small style="color: #777; font-size: 14px;">Leave empty to download the full video.</small>
+            
+            <button type="submit">Download</button>
+        </form>
+    </div>
+    <footer>
+        <p>Made with ❤️ in {{ location }}</p>
+        <p>© {{ current_year }} {{ company_short_name }}. All rights reserved.</p>
+        <p>Contact Support <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+    </footer>
+</body>
+</html>

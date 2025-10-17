@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Ready</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: #333; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 50px auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 10px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            flex: 1; 
+        }
+        h1 { 
+            text-align: center; 
+            color: #4a4a4a; 
+            margin-bottom: 30px; 
+        }
+        ul { 
+            list-style: none; 
+            padding: 0; 
+        }
+        li { 
+            margin: 15px 0; 
+        }
+        a { 
+            display: inline-block; 
+            padding: 12px 24px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            transition: transform 0.2s; 
+        }
+        a:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+        }
+        .back-link { 
+            text-align: center; 
+            margin-top: 30px; 
+        }
+        footer { 
+            text-align: center; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            color: #6c757d; 
+            font-size: 14px; 
+        }
+        footer a { 
+            color: #667eea; 
+            text-decoration: none; 
+        }
+        footer a:hover { 
+            text-decoration: underline; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Download Ready</h1>
+        <ul>
+            {% for file in files %}
+                <li><a href="{{ url_for('download', download_id=download_id, filename=file.split('/')[-1]) }}">Download {{ file.split('/')[-1] }}</a></li>
+            {% endfor %}
+        </ul>
+        <div class="back-link">
+            <a href="{{ url_for('index') }}">Back to Downloader</a>
+        </div>
+    </div>
+    <footer>
+        <p>Made with ❤️ in {{ location }}</p>
+        <p>© {{ current_year }} {{ company_short_name }}. All rights reserved.</p>
+        <p>Contact Support <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+    </footer>
+</body>
+</html>
